@@ -1,6 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using MyFirstApiCleanArchitecture.Domain.Abstraction;
+using MyFirstApiCleanArchitecture.Infrastructure.Repositories;
+using MyFirstApiCleanArchitecture.Infrastructure.UnitOfWorks;
 
 namespace MyFirstApiCleanArchitecture.Infrastructure;
 
@@ -11,7 +14,7 @@ public static class ServiceRegister
         IConfiguration config)
     {
         AddDbConnection(services, config);//вызов подключения контекста бд
-
+        AddServicesToDiContainer(services);
         return services;//возвращаем коллекцию сервисов
     }
     
@@ -23,6 +26,14 @@ public static class ServiceRegister
         {
             options.UseSqlServer(config.GetConnectionString("Database"));
         });
+        return services;
+    }
+
+    //Добавляем в DI контейнер наши сервисы(UnitOfWork и Repository)
+    private static IServiceCollection AddServicesToDiContainer(this IServiceCollection services)
+    {
+        services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+        services.AddScoped<IUnitOfWork, UnitOfWork>();
         return services;
     }
 }
