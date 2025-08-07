@@ -38,17 +38,17 @@ public sealed class Invoice : BaseEntity
     public Money TotalBalance { get; private set; } = null!;
 
     public static async Task<Invoice> Create(
-        CreateInvoiceDto request,
+        CreateInvoiceDto dto,
         IUnitOfWork unitOfWork)
     {
         //проверка что количество продуктов не пустое
-        if (request.PurchasedProducts is null || request.PurchasedProducts.Count == 0)
+        if (dto.PurchasedProducts is null || dto.PurchasedProducts.Count == 0)
             throw new InvalidOperationException("Empty Invoice can not be created");
 
         var invoiceId = Guid.NewGuid(); //создаём новый Id для счёта
         ICollection<InvoiceItem> purchaseProducts = []; //создаём коллекцию купленных товаров
 
-        foreach (var purchasedProduct in request.PurchasedProducts) //в цикле получаем продукт через unitOfWork(нужен для запросов к БД)
+        foreach (var purchasedProduct in dto.PurchasedProducts) //в цикле получаем продукт через unitOfWork(нужен для запросов к БД)
         {
             var product = await unitOfWork
                 .Repository<Product>()//метод репозитория для получения доступа к универсальным командам
@@ -69,8 +69,8 @@ public sealed class Invoice : BaseEntity
 
         var invoice = new Invoice(//создаём счёт
             invoiceId,
-            new PoNumber(request.PoNumber),
-            request.CustomerId,
+            new PoNumber(dto.PoNumber),
+            dto.CustomerId,
             purchaseProducts,
             new Money(totalBalance));
 
@@ -80,8 +80,8 @@ public sealed class Invoice : BaseEntity
         return invoice;//вернуть счёт
     } 
 
-    public void Update(UpdateInvoiceDto request)
+    public void Update(UpdateInvoiceDto dto)
     {
-        PoNumber = new PoNumber(request.PoNumber);
+        PoNumber = new PoNumber(dto.PoNumber);
     }
 }

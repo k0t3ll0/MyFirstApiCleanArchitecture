@@ -1,11 +1,8 @@
-﻿using System.ComponentModel;
-using static System.Runtime.InteropServices.JavaScript.JSType;
+﻿namespace MyFirstApiCleanArchitecture.Domain.Abstraction;
 
-namespace MyFirstApiCleanArchitecture.Domain.Abstraction;
-
-public class Result<TEntity> where TEntity : BaseEntity
+public class Result<TDto> where TDto : IResult
 {
-    public TEntity? Data { get; set; }
+    public TDto? Data { get; set; }
 
     public bool IsNotSuccessfull { get; set; }
 
@@ -14,7 +11,7 @@ public class Result<TEntity> where TEntity : BaseEntity
     public Dictionary<string, string>? Errors { get; set; }
 
     //Success
-    private Result(TEntity? data, int statusCode)
+    private Result(TDto? data, int statusCode)
     {
         Data = data;
         IsNotSuccessfull = false;
@@ -48,24 +45,24 @@ public class Result<TEntity> where TEntity : BaseEntity
     }
 
     //method that return new Result
-    public static Result<TEntity> Success(
-        TEntity data,
+    public static Result<TDto> Success(
+        TDto data,
         int statusCode)
     => new(data, statusCode);
 
-    public static Result<TEntity> Success(
+    public static Result<TDto> Success(
         int statusCode)
     => new(statusCode);
 
-    public static Result<TEntity> Failed(
+    public static Result<TDto> Failed(
          int statusCode,
          string errorCode,
          string errorMessage)
     => new(statusCode, errorCode, errorMessage);
 
-    public static Result<TEntity> Failed(
+    public static Result<TDto> Failed(
         int statusCode, Dictionary<string, string> errors)
     => new(statusCode, errors);
 }
 
-public class NoContentDto;
+public class NoContentDto : IResult;
