@@ -1,4 +1,4 @@
 ﻿namespace MyFirstApiCleanArchitecture.Domain.Abstraction;
 
-public class IResult;
+public interface IResult;
 
